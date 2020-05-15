@@ -129,13 +129,7 @@ dmypy.json
 .pyre/
 
 # VS Code stuff
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-!.vscode/sftp.json
-*.code-workspace
+.vscode/
 
 # Local History for Visual Studio Code
 .history/
