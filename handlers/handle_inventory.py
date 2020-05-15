@@ -19,6 +19,6 @@ async def handle_inventory(player_inventory):
 
     for key in player_inventory.keys():
         if key.endswith("lootbox"):
-            inventory_actions.append((2, f"open {lootbox}"))
+            inventory_actions.append((2, f"open {key}"))
 
     return inventory_actions
