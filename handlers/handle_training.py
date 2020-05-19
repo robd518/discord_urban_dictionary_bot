@@ -6,13 +6,11 @@ class HandleTraining():
         super().__init__(*args, **kwargs)
 
 
-    def handle_training(self, message):
+    def handle_training(self, message, player_inventory):
         '''Solve training scenarios
 
             Returns: answer or 'none found'
         '''
-
-        print(f'==================\n{message}')
 
         try:
             # Get the location
@@ -35,8 +33,8 @@ class HandleTraining():
                 return self.training_forest(message)
 
             elif (location == "mine"):
-                print(f"Answer: {self.training_mine(message)}")
-                return self.training_mine(message)
+                print(f"Answer: {self.training_mine(message, player_inventory)}")
+                return self.training_mine(message, player_inventory)
 
         except AttributeError:
             return "none found"
@@ -126,8 +124,16 @@ class HandleTraining():
         except AttributeError:
             return "none found"
 
-    def training_mine(self, message):
+    def training_mine(self, message, player_inventory):
         ''' For now, we just answer this with "yes" until we build out
             the training solver
         '''
-        return "yes"
+        try:
+            ruby_question = int(re.search(r'Do you have more than (\d{1,})\s.+', message).group(1))
+            if player_inventory["ruby"] > ruby_question:
+                return "yes"
+            else:
+                return "no"
+
+        except AttributeError:
+            return "none found"
