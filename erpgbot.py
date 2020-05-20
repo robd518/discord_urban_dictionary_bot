@@ -20,6 +20,7 @@ class ERPGBot(discord.Client):
         # Read env vars
         self.bot_stuff_channel = int(os.getenv("EPIC_RPG_BOT_CHANNEL"))
         self.work_command = os.getenv("WORK_COMMAND")
+        self.hp_threshold = int(os.getenv("HP_THRESHOLD"))
 
         # Set up logging
         self.logger = logging.getLogger("discord")
@@ -74,7 +75,7 @@ class ERPGBot(discord.Client):
 
         # Handle healing ones self
         elif message.content.startswith(f'**{client.user.name}** found'):
-            if (handle_life_check(message.content) == True) or (r'**Your horse** saved you') in message.content:
+            if (handle_life_check(message.content, self.hp_threshold) == True) or (r'**Your horse** saved you') in message.content:
                 await self.msg_queue.put((1, "rpg heal"))
 
         # Handle receiving a lootbox
@@ -96,7 +97,7 @@ class ERPGBot(discord.Client):
 
         # "RPG TRAINING" - Handle training messages
         elif message.content.startswith(f'**{client.user.name}** is training in the'):
-            training_answer = self.training_handler.handle_training(message.content)
+            training_answer = self.training_handler.handle_training(message.content, self.player_inventory)
             await self.msg_queue.put((0, training_answer))
 
         # "RPG RD" - Parse 'rpg rd' responses and place ready actions into self.ready_actions_todo
@@ -106,6 +107,8 @@ class ERPGBot(discord.Client):
                 action = self.ready_actions_todo.pop(0)
                 if action == "chop | fish | pickup | mine":
                     action = self.work_command
+                if action == "adventure":
+                    await self.msg_queue.put((1, "rpg heal"))
 
                 await self.msg_queue.put((2, f'rpg {action}'))
 
@@ -120,7 +123,7 @@ class ERPGBot(discord.Client):
 
         
         # Print everything
-        print(f"{message.guild} | {message.channel} | {message.author} | {message.content}")
+        print(f"{message.guild} | {message.channel} | {message.author} | {message.content} | {message.attachments}")
         self.print_embeds(message.embeds)
 
     async def perform_action_handler(self):
