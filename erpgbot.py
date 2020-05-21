@@ -70,7 +70,14 @@ class ERPGBot(discord.Client):
         # Detect the EPIC GUARD captcha and shut 'er down until we can reliably solve captcha
         elif message.content.startswith(f':police_car: **EPIC GUARD**: stop there, <@{client.user.id}>'):
             guard_answer = handle_guard(message)
-            print(f"CAPTCHA RECEIVED - HERE'S THE ANSWER: {guard_answer}")
+            print(f"GUARD ANSWER: {guard_answer}")
+            if guard_answer == "none found":
+                await self.close()
+            else:
+                await self.msg_queue.put((0, guard_answer))
+
+        # Handle "IN THE JAIL" events:
+        elif f"{client.user.name} is now in the jail!" in message.content:
             await self.close()
 
         # Handle healing ones self
